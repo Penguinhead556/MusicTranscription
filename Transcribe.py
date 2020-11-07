@@ -1,9 +1,8 @@
 import numpy as np
-import simpleaudio as sa
+import librosa
 
+y, sr = librosa.load("RED HEART.wav")
 
-wave_obj = sa.WaveObject.from_wave_file("RED HEART.mp3")
-play_obj = wave_obj.play()
-play_obj.wait_done() 
+tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 
-
+print(tempo)
