@@ -3,6 +3,7 @@ import sounddevice as sd
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
+import scipy
 
 y, sr = librosa.load("RED HEART.wav")
 
@@ -21,9 +22,9 @@ print(beat_frames[0])
 
 y = y[beat_frames[0]:]
 
-winlength = int(tempo*sr/60/4)
+winlength = int(sr*60/4/tempo)
 
-D = librosa.stft(y, win_length = winlength, n_fft = 16384)
+D = librosa.stft(y, win_length = winlength, n_fft = 4096)
 
 fig, ax = plt.subplots()
 img = librosa.display.specshow(librosa.amplitude_to_db(np.abs(D),
@@ -35,18 +36,20 @@ maxIndicies  = []
 print(len(D))
 
 for i in range(len(D[0])-1):
-    maxIndicies.append(np.argmin(D[:,i])*sr/winlength)
-# plt.plot(maxIndicies)
+    maxIndicies.append(scipy.signal.find_peaks(D[:,i], distance=200)[0])
 
 tt = np.arange(0, int(len(y)/sr), 1/sr)
 
 reconstructed = np.array([])
 
 for i in range(len(beat_frames)-1):
-    reconstructed = np.append(reconstructed, np.sin(tt[i*winlength:(i+1)*winlength]*maxIndicies[i] * 2 * np.pi))
+    temp_arr = np.array([0]*winlength)
+    for j in range(len(maxIndicies[i])):
+        temp_arr = temp_arr + np.sin(tt[i*winlength:(i+1)*winlength]*maxIndicies[i][j] * 2 * np.pi)
+    reconstructed = np.append(reconstructed, temp_arr)
 
-print(beat_frames[-1])
-print(len(reconstructed))
+# print(beat_frames[-1])
+# print(len(reconstructed))
 
 sd.play(reconstructed, sr)
 
