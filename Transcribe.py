@@ -43,7 +43,7 @@ tt = np.arange(0, int(len(y)/sr), 1/sr)
 reconstructed = np.array([])
 
 for i in range(len(beat_frames)-1):
-    reconstructed = np.append(reconstructed, np.sin(tt[i*winlength:(i+1)*winlength]*maxIndicies[i]/sr * 2 * np.pi))
+    reconstructed = np.append(reconstructed, np.sin(tt[i*winlength:(i+1)*winlength]*maxIndicies[i] * 2 * np.pi))
 
 print(beat_frames[-1])
 print(len(reconstructed))
